@@ -6,15 +6,15 @@ on:
 
 env:
   PACKAGES_TOKEN: ${{secrets.PACKAGES_TOKEN}}
-  AZURE_RESOURCE_GROUP: TeamA-Production-RG
-  AZURE_APP_PLAN: TeamA-Production-Deployment
+  AZURE_RESOURCE_GROUP: TeamB-Production-RG
+  AZURE_APP_PLAN: TeamB-Production-Deployment
   AZURE_LOCATION: '"Central US"'
   #################################################
   ### USER PROVIDED VALUES ARE REQUIRED BELOW   ###
   #################################################
   #################################################
   ### REPLACE USERNAME WITH GH USERNAME         ###
-  AZURE_WEBAPP_NAME: TeamA-Production
+  AZURE_WEBAPP_NAME: TeamB-Production
   #################################################
 
 jobs:
