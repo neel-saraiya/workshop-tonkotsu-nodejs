@@ -1,0 +1,15 @@
+name: tonkotsu-nodejs-Jenkins
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on:
+      - ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: run command
+      shell: bash
+      run: |-
+        npm install
+        npm test
