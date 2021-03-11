@@ -1,0 +1,17 @@
+name: workshop-tonkotsu-nodejs-Pipeline
+on:
+  workflow_dispatch:
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: sh
+      shell: bash
+      run: npm install
+    - name: sh
+      shell: bash
+      run: npm test
