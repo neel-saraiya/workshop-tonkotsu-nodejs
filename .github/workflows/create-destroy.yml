@@ -1,0 +1,90 @@
+name: Spin and Destroy Resources
+
+on:
+  pull_request:
+    types: [labeled]
+
+env:
+  AZURE_RESOURCE_GROUP: GitHub-DevOps
+  AZURE_APP_PLAN: node-action-plan-stage
+  AZURE_LOCATION: '"Central US"'
+  AZURE_WEBAPP_NAME: nodejstest
+  AZURE_RESOURCE_GROUP_PROD: node-resource-group-prod
+  AZURE_APP_PLAN_PROD: node-action-plan-prod
+  AZURE_LOCATION_PROD: '"West US"'
+  AZURE_WEBAPP_NAME_PROD: mynodeinfoexpressapp-prod
+
+jobs:
+  setup-up-azure-stage-resources:
+    runs-on: ubuntu-latest
+
+    if: contains(github.event.pull_request.labels.*.name, 'spin up stage')
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: staging
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: npm install, build, and test
+        run: |
+          npm install
+          npm run build --if-present
+          npm run test --if-present
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create Azure resource group
+        if: success()
+        run: |
+          az group create --location ${{env.AZURE_LOCATION}} --name ${{env.AZURE_RESOURCE_GROUP}} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+      - name: Create Azure app service plan
+        if: success()
+        run: |
+          az appservice plan create --resource-group ${{env.AZURE_RESOURCE_GROUP}} --name ${{env.AZURE_APP_PLAN}} --is-linux --sku F1 --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+      - name: Create webapp resource
+        if: success()
+        run: |
+          az webapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --plan ${{ env.AZURE_APP_PLAN }} --name ${{ env.AZURE_WEBAPP_NAME }} --runtime "node|12-lts" --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+  setup-up-azure-prod-resources:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'spin up prod')
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: main
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: npm install, build, and test
+        run: |
+          npm install
+          npm run build --if-present
+          npm run test --if-present
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create Azure resource group
+        if: success()
+        run: |
+          az group create --location ${{env.AZURE_LOCATION_PROD}} --name ${{env.AZURE_RESOURCE_GROUP_PROD}} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+      - name: Create Azure app service plan
+        if: success()
+        run: |
+          az appservice plan create --resource-group ${{env.AZURE_RESOURCE_GROUP_PROD}} --name ${{env.AZURE_APP_PLAN_PROD}} --is-linux --sku F1 --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+      - name: Create webapp resource
+        if: success()
+        run: |
+          az webapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP_PROD }} --plan ${{ env.AZURE_APP_PLAN_PROD }} --name ${{ env.AZURE_WEBAPP_NAME_PROD }} --runtime "node|12-lts" --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
