@@ -1,0 +1,35 @@
+name: tonkotsu-nodejs-Jenkins
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on:
+      - ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: run command
+      shell: bash
+      run: |-
+        npm install
+        npm test
+#     # This item has no matching transformer
+#     - uses: com.microsoft.jenkins.appservice.WebAppDeploymentRecorder
+#       with:
+#         plugin: azure-app-service@1.0.2
+#         azureCredentialsId: AzureSP
+#         resourceGroup: GitHub-DevOps
+#         appName: nodejstestinginfo
+#         filePath: "**/*.js,package.json,process.json"
+#         sourceDirectory:
+#         targetDirectory:
+#         deployOnlyIfSuccessful: 'true'
+#         publishType: file
+#         dockerImageName:
+#         dockerImageTag:
+#         dockerFilePath: "**/Dockerfile"
+#         dockerRegistryEndpoint:
+#           plugin: docker-commons@1.17
+#         deleteTempImage: 'true'
+#         skipDockerBuild: 'false'
+#         slotName:
